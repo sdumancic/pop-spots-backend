@@ -19,6 +19,6 @@ public class Users {
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "gender", length = 1)
+    @Column(name = "gender", length = 1, columnDefinition = "CHAR(1)")
     private String gender;
 }

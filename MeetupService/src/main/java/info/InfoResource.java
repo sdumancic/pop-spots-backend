@@ -2,6 +2,7 @@ package info;
 
 import auth.Auth;
 import auth.AuthService;
+import clients.UsersRestClient;
 import events.api.rest.dto.EventDto;
 import events.api.rest.dto.EventFilterDto;
 import events.service.TestService;
@@ -20,6 +21,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import user.api.rest.dto.UserDto;
+import utils.Is404Exception;
+
+import java.time.temporal.ChronoUnit;
 
 @Path("/")
 @RequestScoped
@@ -39,6 +46,10 @@ public class InfoResource {
 
     ApiRequest apiRequest;
 
+    @RestClient
+    UsersRestClient usersRestClient;
+
+
     @GET
     @Auth
     @RolesAllowed("demo.read")
@@ -46,6 +57,22 @@ public class InfoResource {
     public Response info() {
         authService.getRoles().forEach(log::info);
         return Response.ok().entity(authService.getClaimDto()).build();
+
+    }
+
+    @GET
+    @Path("/api/users/userByObjectId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Retry(maxRetries = 3, delay = 200, delayUnit = ChronoUnit.MILLIS, abortOn = NotFoundException.class)
+    public UserDto getUserByObjectId(@QueryParam("objectId") String objectId) {
+        try {
+            return usersRestClient.getByObjectId(objectId);
+        } catch (WebApplicationException ex) {
+            if (Is404Exception.IS_404.test(ex)) {
+                throw new NotFoundException("User not found");
+            }
+            throw ex;
+        }
 
     }
 
@@ -58,4 +85,6 @@ public class InfoResource {
         PageRequest request = new PageRequest(this.jsonApiRequest);
         return Response.ok(testService.filter(request, eventFilterDto)).build();
     }
+
+
 }

@@ -45,3 +45,6 @@ nb-configuration.xml
 .certs/
 /docker-compose.yml
 /MeetupService/src/main/resources/application-dev.properties
+/MeetupService/src/main/resources/application-test.properties
+/UserService/src/main/resources/application-dev.properties
+/UserService/src/main/resources/application-test.properties

@@ -1,12 +1,15 @@
 package events.domain.model;
 
-import com.microsoft.sqlserver.jdbc.Geometry;
+//import com.microsoft.sqlserver.jdbc.Geometry;
+
+import eventfees.domain.model.EventFee;
 import eventtypes.domain.model.EventType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Geometry;
 
 import java.time.LocalDateTime;
 
@@ -40,6 +43,9 @@ public class Event {
     @Column(name = "status_id")
     private short status;
 
+    @Column(name = "owner_id")
+    private Integer ownerId;
+
     @Column(name = "location", columnDefinition = "geometry")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private Geometry location;
@@ -47,4 +53,8 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
     private EventType eventType;
+
+    @ManyToOne
+    @JoinColumn(name = "entry_fee_id", nullable = true)
+    private EventFee eventFee;
 }

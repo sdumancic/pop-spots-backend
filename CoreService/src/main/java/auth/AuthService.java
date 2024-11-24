@@ -8,7 +8,10 @@ import jakarta.json.JsonString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RequestScoped
 @Slf4j
@@ -16,24 +19,28 @@ public class AuthService {
     @Inject
     SecurityIdentity securityIdentity;
 
-    public Principal getPrincipal(){
+    public Principal getPrincipal() {
         return securityIdentity.getPrincipal();
     }
 
-    public List<String> getRoles(){
+    public List<String> getRoles() {
         return securityIdentity.getRoles().stream().toList();
     }
 
-    private Map<String,Object> getAvailableClaims(){
+    public String getSubject() {
+        return ((DefaultJWTCallerPrincipal) securityIdentity.getPrincipal()).getSubject();
+    }
+
+    private Map<String, Object> getAvailableClaims() {
         Map<String, Object> claims = new HashMap<>();
-        DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = (DefaultJWTCallerPrincipal)getPrincipal();
+        DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = (DefaultJWTCallerPrincipal) getPrincipal();
         defaultJWTCallerPrincipal
                 .getClaimNames()
                 .forEach(claimName -> claims.put(claimName, defaultJWTCallerPrincipal.getClaim(claimName)));
         return claims;
     }
 
-    public ClaimDto getClaimDto(){
+    public ClaimDto getClaimDto() {
         Map<String, Object> claims = getAvailableClaims();
         String email = null;
         Object claimsObj = claims.get(UserClaims.EMAIL.getClaimKey());
