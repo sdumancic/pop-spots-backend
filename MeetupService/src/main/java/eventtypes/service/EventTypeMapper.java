@@ -20,7 +20,7 @@ public class EventTypeMapper {
         eventType.setId(dto.getId());
         eventType.setName(dto.getName());
         eventType.setDescription(dto.getDescription());
-        eventType.setActive(BooleanUtils.fromBoolean(dto.getActive()));
+        eventType.setActive(dto.getActive() != null ? BooleanUtils.fromBoolean(dto.getActive()) : 1);
         return eventType;
     }
 }
