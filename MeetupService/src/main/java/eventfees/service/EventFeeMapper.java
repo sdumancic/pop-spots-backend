@@ -15,7 +15,8 @@ public class EventFeeMapper {
                 .id(eventFee.getId())
                 .description(eventFee.getDescription())
                 .active(BooleanUtils.fromShort(eventFee.getActive()))
-                .eventFeePrices(eventFee.getEventsFeePrices().stream().map(EventFeePriceMapper::toEventFeePricesDto).toList())
+                .eventFeePrices(eventFee.getEventsFeePrices() == null ? null :
+                        eventFee.getEventsFeePrices().stream().map(EventFeePriceMapper::toEventFeePricesDto).toList())
                 .build();
     }
 
@@ -26,8 +27,10 @@ public class EventFeeMapper {
         EventFee eventFee = new EventFee();
         eventFee.setId(dto.getId());
         eventFee.setDescription(dto.getDescription());
-        eventFee.setActive(BooleanUtils.fromBoolean(dto.getActive()));
-        eventFee.setEventsFeePrices(dto.getEventFeePrices().stream().map(EventFeePriceMapper::toEventFeePrices).toList());
+        eventFee.setActive(dto.getActive() != null ? BooleanUtils.fromBoolean(dto.getActive()) : 1);
+        eventFee.setEventsFeePrices(dto.getEventFeePrices() == null
+                ? null
+                : dto.getEventFeePrices().stream().map(EventFeePriceMapper::toEventFeePrices).toList());
 
         return eventFee;
     }

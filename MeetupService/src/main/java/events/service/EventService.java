@@ -1,10 +1,12 @@
 package events.service;
 
+import events.api.rest.dto.CreateEventDto;
 import events.api.rest.dto.EventDto;
 import events.domain.model.Event;
 import events.infrastructure.persistence.EventRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import user.api.rest.dto.UserDto;
@@ -28,7 +30,11 @@ public class EventService {
         return EventMapper.toEventDto(event, userDto);
     }
 
-    public void createEvent() {
+    @Transactional
+    public EventDto createEvent(CreateEventDto dto, UserDto userDto) {
+        Event event = EventMapper.toEvent(dto, userDto);
+        eventRepository.persist(event);
+        return EventMapper.toEventDto(event, userDto);
     }
 
     public void updateEvent() {
